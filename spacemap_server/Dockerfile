@@ -44,9 +44,6 @@ RUN npm install -g @nestjs/cli
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-RUN mkdir /app
-RUN git clone https://github.com/jiminu/kokoa-clone.git /app
-
 # install oh my zsh
 RUN apt install -y zsh
 RUN chsh -s /bin/zsh
@@ -64,3 +61,20 @@ RUN echo 'LS_COLORS="ow=01;36;40" && export LS_COLORS' >> ~/.zshrc
 RUN echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
 RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.zshrc
 RUN echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> ~/.zshrc
+
+
+RUN mkdir ~/.ssh/
+ADD id_rsa ~/.ssh/id_rsa
+RUN chmod 600 ~/.ssh
+
+RUN touch ~/.ssh/known_hosts
+RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
+# RUN mkdir ~/.ssh/
+# ADD ~/.ssh/id_rsa ~/.ssh/id_rsa
+
+# RUN touch ~/.ssh/known_hosts
+# RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+RUN mkdir /apps
+RUN git clone git@github.com:jiminu/hy_python.git /app
