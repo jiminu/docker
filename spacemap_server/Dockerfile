@@ -61,7 +61,7 @@ RUN chsh -s /bin/zsh
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-RUN perl -pi -w -e "s/plugins=.*/plugins=(git ssh-agent zsh-autosuggestions zsh-syntax-highlighting)/g;" ~/.zshrc
+RUN perl -pi -w -e "s/plugins=.*/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/g;" ~/.zshrc
 RUN echo 'LS_COLORS="ow=01;36;40" && export LS_COLORS' >> ~/.zshrc
 RUN echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
 RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.zshrc
