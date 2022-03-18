@@ -14,8 +14,9 @@ RUN apt-get update \
     curl \
     gnupg \
     lsb-release \
-    wget
-
+    wget \
+    fontconfig
+    
 # install docker
 # RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 # RUN echo \ 
