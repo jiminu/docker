@@ -14,8 +14,7 @@ RUN apt-get update \
     curl \
     gnupg \
     lsb-release \
-    wget \
-    fontconfig
+    wget
 
 # install docker
 # RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -29,12 +28,12 @@ RUN apt-get update \
 #     containerd.io
 
 # # install fonts
-# RUN mkdir /usr/share/fonts/truetype/MesloLGS\ NF
-# RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Regular.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
-# RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Bold.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
-# RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Italic.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
-# RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Bold\ Italic.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
-# RUN fc-cache -f -v
+RUN mkdir /usr/share/fonts/truetype/MesloLGS\ NF
+RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Regular.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Bold.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
+RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Italic.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
+RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Bold\ Italic.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
+RUN fc-cache -f -v
 
 # install mariaDB
 RUN apt install -y \ 
@@ -42,39 +41,37 @@ RUN apt install -y \
     mariadb-client
 
 # install node & nest
-RUN mkdir -p /usr/local/nvm
-ENV NVM_DIR /usr/local/nvm
+RUN mkdir -p root/.nvm
+ENV NVM_DIR root/.nvm
 ENV NODE_VERSION 16.13.1
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 RUN source $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias defalut $NODE_VERSION \
     && nvm use defalut \
-    && apt install -y npm
-RUN npm install -g @nestjs/cli
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+    && apt install -y npm \
+    && npm install -g @nestjs/cli
+# ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+# ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # install oh my zsh
 RUN apt install -y zsh
 RUN chsh -s /bin/zsh
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-RUN git clone https://github.com/zsh-users/zsh-completions.git ~/.oh-my-zsh/custom/plugins/zsh-completions
-
-# change .zshrc option
-# RUN perl -pi -w -e 's/ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/g;' ~/.zshrc 
-RUN perl -pi -w -e "s/plugins=.*/plugins=(git ssh-agent zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/g;" ~/.zshrc
-# RUN mkdir -p root/.vscode-server/data/Machine
-# RUN touch root/.vscode-server/data/Machine/settings.json
-# RUN echo '{"editor.fontFamily": "Consolas, 'Courier New', monospace, 'MesloLGS NF'",}' >> root/.vscode-server/data/Machine/settings.json
+RUN perl -pi -w -e "s/plugins=.*/plugins=(git ssh-agent zsh-autosuggestions zsh-syntax-highlighting)/g;" ~/.zshrc
 RUN echo 'LS_COLORS="ow=01;36;40" && export LS_COLORS' >> ~/.zshrc
 RUN echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
 RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.zshrc
 RUN echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> ~/.zshrc
 
+# install powerlevel10k (oh my zsh theme)
+RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
+RUN perl -pi -w -e 's/ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/g;' ~/.zshrc 
+RUN mkdir -p root/.vscode-server/data/Machine
+RUN touch root/.vscode-server/data/Machine/settings.json
+RUN echo '{"editor.fontFamily": "Consolas, 'Courier New', monospace, 'MesloLGS NF'",}' >> root/.vscode-server/data/Machine/settings.json
 
 # RUN mkdir -m 600 root/.ssh/ \
 #     && touch root/.ssh/known_hosts
