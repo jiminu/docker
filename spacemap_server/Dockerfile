@@ -16,7 +16,23 @@ RUN apt-get update \
     lsb-release \
     wget \
     fontconfig
-    
+
+# install oh my zsh
+RUN apt install -y zsh
+RUN chsh -s /bin/zsh
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+RUN perl -pi -w -e "s/plugins=.*/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/g;" ~/.zshrc
+RUN echo 'LS_COLORS="ow=01;36;40" && export LS_COLORS' >> ~/.zshrc
+
+# install powerlevel10k (oh my zsh theme)
+RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
+RUN perl -pi -w -e 's/ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/g;' ~/.zshrc 
+RUN mkdir -p root/.vscode-server/data/Machine
+RUN touch root/.vscode-server/data/Machine/settings.json
+RUN echo '{"editor.fontFamily": "Consolas, 'Courier New', monospace, 'MesloLGS NF'",}' >> root/.vscode-server/data/Machine/settings.json
+
 # install docker
 # RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 # RUN echo \ 
@@ -52,27 +68,9 @@ RUN source $NVM_DIR/nvm.sh \
     && nvm use defalut \
     && apt install -y npm \
     && npm install -g @nestjs/cli
+RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.zshrc 
 # ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 # ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
-
-# install oh my zsh
-RUN apt install -y zsh
-RUN chsh -s /bin/zsh
-RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-RUN perl -pi -w -e "s/plugins=.*/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/g;" ~/.zshrc
-RUN echo 'LS_COLORS="ow=01;36;40" && export LS_COLORS' >> ~/.zshrc
-RUN echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
-RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.zshrc
-RUN echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> ~/.zshrc
-
-# install powerlevel10k (oh my zsh theme)
-RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
-RUN perl -pi -w -e 's/ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/g;' ~/.zshrc 
-RUN mkdir -p root/.vscode-server/data/Machine
-RUN touch root/.vscode-server/data/Machine/settings.json
-RUN echo '{"editor.fontFamily": "Consolas, 'Courier New', monospace, 'MesloLGS NF'",}' >> root/.vscode-server/data/Machine/settings.json
 
 # RUN mkdir -m 600 root/.ssh/ \
 #     && touch root/.ssh/known_hosts
