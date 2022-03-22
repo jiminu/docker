@@ -80,4 +80,4 @@ RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.z
 # RUN git clone git@jmu417@gmail.com:jiminu/hy_python.git /app
 
 RUN mkdir /apps
-RUN git clone https://github.com/Seunghwan17/SpaceMap-nestJS.git /app
+# RUN git clone https://github.com/Seunghwan17/SpaceMap-nestJS.git /app
