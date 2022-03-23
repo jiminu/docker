@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-ENV TZ=Asia/Seoul
+ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ENV LC_ALL=C.UTF-8
 
@@ -53,15 +53,16 @@ RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Bold\ Italic.tt
 RUN fc-cache -f -v
 
 # install mariaDB
-RUN apt install -y \ 
-    mariadb-server \
-    mariadb-client
+# RUN apt install -y \ 
+#     mariadb-server \
+#     mariadb-client
 
 # install node & nest
 RUN mkdir -p root/.nvm
 ENV NVM_DIR root/.nvm
 ENV NODE_VERSION 16.13.1
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+RUN apt-get update
 RUN source $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias defalut $NODE_VERSION \
@@ -79,5 +80,9 @@ RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.z
 # RUN ssh-keyscan -t rsa github.com >> root/.ssh/known_hosts
 # RUN git clone git@jmu417@gmail.com:jiminu/hy_python.git /app
 
+RUN apt-get clean
+
 RUN mkdir /apps
 # RUN git clone https://github.com/Seunghwan17/SpaceMap-nestJS.git /app
+RUN git clone -b docker --single-branch https://github.com/Seunghwan17/SpaceMap-nestJS.git /app
+# RUN git clone https://github.com/jiminu/dtest.git /app
