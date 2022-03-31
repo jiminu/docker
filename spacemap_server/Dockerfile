@@ -15,7 +15,9 @@ RUN apt-get update \
     gnupg \
     lsb-release \
     wget \
-    fontconfig
+    fontconfig \
+    vim \
+    net-tools
 
 # install oh my zsh
 RUN apt install -y zsh
@@ -29,9 +31,14 @@ RUN echo 'LS_COLORS="ow=01;36;40" && export LS_COLORS' >> ~/.zshrc
 # install powerlevel10k (oh my zsh theme)
 RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
 RUN perl -pi -w -e 's/ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/g;' ~/.zshrc 
+RUN echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
 RUN mkdir -p root/.vscode-server/data/Machine
 RUN touch root/.vscode-server/data/Machine/settings.json
 RUN echo '{"editor.fontFamily": "Consolas, 'Courier New', monospace, 'MesloLGS NF'",}' >> root/.vscode-server/data/Machine/settings.json
+COPY ./.p10k.zsh /root/.p10k.zsh
+RUN perl -pi -w -e 's/# If you come.*/if [[ -r "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh" ]]; then\n  source "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh"\nfi/g' ~/.zshrc
+
+
 
 # install docker
 # RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -68,7 +75,8 @@ RUN source $NVM_DIR/nvm.sh \
     && nvm alias defalut $NODE_VERSION \
     && nvm use defalut \
     && apt install -y npm \
-    && npm install -g @nestjs/cli
+    && npm install -g @nestjs/cli \
+    && npm install -g pm2
 RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.zshrc 
 # ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 # ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
@@ -82,7 +90,6 @@ RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.z
 
 RUN apt-get clean
 
-RUN mkdir /apps
-# RUN git clone https://github.com/Seunghwan17/SpaceMap-nestJS.git /app
 RUN git clone -b docker --single-branch https://github.com/Seunghwan17/SpaceMap-nestJS.git /app
-# RUN git clone https://github.com/jiminu/dtest.git /app
+WORKDIR /app
+RUN npm install
