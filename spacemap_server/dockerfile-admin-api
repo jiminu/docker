@@ -90,6 +90,5 @@ RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.z
 
 RUN apt-get clean
 
-RUN git clone -b docker --single-branch https://github.com/Seunghwan17/SpaceMap-nestJS.git /app
+RUN git clone --single-branch https://github.com/Seunghwan17/spacemap-admin-api.git /app
 WORKDIR /app
-RUN npm install
