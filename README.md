@@ -3,7 +3,7 @@
 
 
 ```docker
-docker run --name [container_name] -d -p [local_port:image_port] [image_name]
+docker run -it --name [container_name] -d -p [local_port:image_port] [image_name]
 ```
 - [image_name]을 [container_name]으로 실행. port는 [local_port:image_port]로 연결
 - -d(daemon) : 백그라운드에서 컨테이너 실행
