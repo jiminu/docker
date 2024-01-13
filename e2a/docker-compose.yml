@@ -1,0 +1,49 @@
+version: "3"
+
+# services 하위로 한 묶음
+services:
+  mongodb:
+    container_name: mongodb
+    image: jiminu/mdb:0.1
+    # build: 
+    #   context: .
+    #   dockerfile: dockerfile_db
+    init:
+      true
+    ports:
+      # host port : container port
+      - 27017:27017
+    # environment:
+      # Set time zone
+      # - TZ=UTC
+      # - MYSQL_PORT=3306
+      # - MYSQL_ROOT_PASSWORD=1q2w3e4r
+      # - MYSQL_DATABASE=spacemap_db
+    restart: always
+    # volumes:
+    #   # host path : container path
+    #   - C:/volume_db/mariadb/data:/var/lib/mysql
+    #   - C:/volume_db/mariadb/conf.d:/etc/mysql/conf.d
+    #   - C:/volume_db/mariadb/sql:/docker-entrypoint-initdb.d 
+    networks:
+      - e2a_net
+      
+  express:
+    container_name: express
+    image: jiminu/mexpress:0.1
+    init:
+      true
+    depends_on:
+      # Set dependencies. In order to start this container, maria-db must be start first.
+      - mongodb
+    restart: always
+    ports:
+      # host port : container port
+      - 4000:4000
+    command: tail -f /dev/null
+    networks:
+      - e2a_net
+    
+networks:
+  e2a_net:
+    driver: bridge
