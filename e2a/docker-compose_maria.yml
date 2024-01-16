@@ -1,0 +1,45 @@
+version: "3"
+
+# services 하위로 한 묶음
+services:
+  maria:
+    container_name: maria
+    image: jiminu/maria:0.1
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=4321
+      - MYSQL_DATABASE=sample
+    
+    # volumes:
+    #   - C:/volume_db/mongodb:/data/db
+      
+    # privileged: true
+    restart: unless-stopped
+    command: "tail -f /dev/null"
+    networks:
+      - food_net
+      
+  express:
+    container_name: express
+    image: jiminu/mexpress:0.3
+    init:
+      true
+    depends_on:
+      - maria
+    restart: always
+    ports:
+      - ${NODE_PORT}:${NODE_PORT}
+    expose:
+      - ${NODE_PORT}
+    command: tail -f /dev/null
+    networks:
+      - food_net
+    
+networks:
+  food_net:
+    driver: bridge

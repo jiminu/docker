@@ -1,0 +1,44 @@
+version: "3"
+
+# services 하위로 한 묶음
+services:
+  mdb:
+    container_name: mdb
+    image: jiminu/mdb:0.6 
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    expose:
+      - ${MONGO_PORT}
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=test
+    
+    volumes:
+      - C:/volume_db/mongodb:/data/db
+      
+    privileged: true
+    restart: unless-stopped
+    command: "tail -f /dev/null && /sbin/init"
+    networks:
+      - food_net
+      
+  express:
+    container_name: express
+    image: jiminu/mexpress:0.3
+    init:
+      true
+    depends_on:
+      - mdb
+    restart: always
+    ports:
+      - ${NODE_PORT}:${NODE_PORT}
+    expose:
+      - ${NODE_PORT}
+    command: tail -f /dev/null
+    networks:
+      - food_net
+    
+networks:
+  food_net:
+    driver: bridge

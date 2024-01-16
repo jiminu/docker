@@ -1,12 +1,12 @@
-FROM mongo:6.0.13-rc0
+FROM mariadb:10.7
 
-# ENV TZ=UTC
-# RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-# ENV LC_ALL=C.UTF-8
+# ENV MYSQL_USER=root
+# ENV MYSQL_DATABASE=test
+# ENV MYSQL_ROOT_PASSWORD=test
+
+# EXPOSE 3306
+
 # essential install
-
-COPY ./users_init.sh /docker-entrypoint-initdb.d/
-
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN apt-get update \ 
     && apt-get install -y \
@@ -43,6 +43,5 @@ RUN perl -pi -w -e 's/# If you come.*/if [[ -r "\${XDG_CACHE_HOME:-\$HOME\/.cach
 # RUN service mysql restart
 
 # RUN mysql -u root -p
-RUN git config --global user.name "jiminu"
-RUN git config --global user.email "jmu417@gmail.com"
+
 CMD tail -f /dev/null
