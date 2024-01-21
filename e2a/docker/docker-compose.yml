@@ -4,7 +4,7 @@ version: "3"
 services:
   mdb:
     container_name: mdb
-    image: jiminu/mdb:0.6 
+    image: jiminu/mdb:0.1 
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
     expose:
@@ -12,25 +12,29 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=test
+      - MONGO_INITDB_DATABASE=sample
     
     volumes:
+      - C:/volume_db/configdb:/data/configdb
       - C:/volume_db/mongodb:/data/db
       
-    privileged: true
-    restart: unless-stopped
-    command: "tail -f /dev/null && /sbin/init"
+    restart: always
+    # command: "tail -f /dev/null"
     networks:
       - food_net
       
   express:
     container_name: express
-    image: jiminu/mexpress:0.3
-    init:
-      true
+    image: jiminu/express:0.1
     depends_on:
       - mdb
     restart: always
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - ME_CONFIG_MONGODB_URL=mongodb://mdb:27017
+      - ME_CONFIG_BASICAUTH_USERNAME=user
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
     ports:
       - ${NODE_PORT}:${NODE_PORT}
     expose:
