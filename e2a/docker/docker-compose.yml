@@ -5,6 +5,8 @@ services:
   mdb:
     container_name: mdb
     image: jiminu/mdb:0.1 
+    env_file:
+      - ../config/.env
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
     expose:
@@ -29,6 +31,8 @@ services:
     depends_on:
       - mdb
     restart: always
+    env_file:
+      - ../config/.env
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
