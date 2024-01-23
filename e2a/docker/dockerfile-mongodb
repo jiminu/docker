@@ -1,4 +1,4 @@
-# docker build -t jiminu/mdb:0.1 -f dockerfile-mongodb ../
+# docker build -t jiminu/mdb:0.1 -f dockerfile-mongodb ./
 
 FROM mongo:6.0
 
@@ -7,9 +7,9 @@ FROM mongo:6.0
 # ENV LC_ALL=C.UTF-8
 # essential install
 
-COPY ../config/users_init.sh /docker-entrypoint-initdb.d/
-COPY ../config/mongod /etc/init.d/mongod
-COPY ../config/mongod.conf /etc/init/mongod.conf
+COPY ./users_init.sh /docker-entrypoint-initdb.d/
+COPY ./mongod /etc/init.d/mongod
+COPY ./mongod.conf /etc/init/mongod.conf
 
 # RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN apt-get update \ 

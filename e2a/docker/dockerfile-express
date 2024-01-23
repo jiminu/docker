@@ -1,4 +1,4 @@
-# docker build -t jiminu/express:0.1 -f dockerfile-express ../
+# docker build -t jiminu/express:0.1 -f dockerfile-express ./
 
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
@@ -34,7 +34,7 @@ RUN echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
 RUN mkdir -p root/.vscode-server/data/Machine
 RUN touch root/.vscode-server/data/Machine/settings.json
 RUN echo '{"editor.fontFamily": "Consolas, 'Courier New', monospace, 'MesloLGS NF'",}' >> root/.vscode-server/data/Machine/settings.json
-COPY ../config/.p10k.zsh /root/.p10k.zsh
+COPY ./.p10k.zsh /root/.p10k.zsh
 RUN perl -pi -w -e 's/# If you come.*/if [[ -r "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh" ]]; then\n  source "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh"\nfi/g' ~/.zshrc
 
 
@@ -74,8 +74,9 @@ RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.z
 # ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 # ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-ADD ../config/id_rsa.pub /root/.ssh/
-RUN chmod 600 /root/.ssh/id_rsa.pub
+RUN mkdir /root/.ssh
+ADD ./id_rsa /root/.ssh/id_rsa
+RUN chmod 600 /root/.ssh/id_rsa
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 RUN apt-get clean
@@ -85,4 +86,7 @@ RUN git config --global user.email "jmu417@gmail.com"
 RUN git clone --single-branch git@github.com:jiminu/e2a_express.git ./app
 WORKDIR /app
 RUN npm install
+
+# RUN rm -rf /root/.ssh/
+
 # CMD tail -f /dev/null

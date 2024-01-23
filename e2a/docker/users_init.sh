@@ -13,6 +13,7 @@ echo ">>>>>>> trying to create database and users"
 if [ -n "${MONGO_INITDB_ROOT_USERNAME:-}" ] && [ -n "${MONGO_INITDB_ROOT_PASSWORD:-}" ] && [ -n "${dbUser:-}" ] && [ -n "${dbPwd:-}" ]; then
 mongod --bind_ip mdb<<EOF
 
+mongosh -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD
 use temp;
 db.createUser({
 　user: '$dbUser',
