@@ -62,8 +62,8 @@ RUN fc-cache -f -v
 # install node & nest
 RUN mkdir -p root/.nvm
 ENV NVM_DIR root/.nvm
-ENV NODE_VERSION 16.14.0
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+ENV NODE_VERSION 20.11.0
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 RUN apt-get update
 RUN source $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \

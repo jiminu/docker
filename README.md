@@ -1,3 +1,10 @@
+# checklist
+
+```
+mongod, mongod.conf, users_init.sh must be LF of EOL
+```
+
+
 # dockerfile
 
 ```docker

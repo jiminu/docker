@@ -4,7 +4,7 @@ version: "3"
 services:
   mdb:
     container_name: mdb
-    image: jiminu/mdb:0.1 
+    image: jiminu/mdb:0.2
     # env_file:
     #   - .env
     ports:
@@ -27,7 +27,7 @@ services:
       
   express:
     container_name: express
-    image: jiminu/express:0.1
+    image: jiminu/express:0.3
     depends_on:
       - mdb
     restart: always
