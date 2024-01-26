@@ -27,7 +27,7 @@ services:
       
   express:
     container_name: express
-    image: jiminu/express:0.3
+    image: jiminu/express:0.4
     depends_on:
       - mdb
     restart: always
