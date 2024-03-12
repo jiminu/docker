@@ -1,7 +1,7 @@
 # docker build -t jiminu/express:0.1 -f dockerfile-express ./
 
-FROM ubuntu:20.04
-ENV DEBIAN_FRONTEND=noninteractive
+FROM node:20.11
+# ENV DEBIAN_FRONTEND=noninteractive
 # essential install
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN apt-get update \ 
@@ -18,63 +18,6 @@ RUN apt-get update \
     net-tools \
     psmisc
 
-# install oh my zsh
-RUN apt install -y zsh
-RUN chsh -s /bin/zsh
-RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-RUN perl -pi -w -e "s/plugins=.*/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/g;" ~/.zshrc
-RUN echo 'LS_COLORS="ow=01;36;40" && export LS_COLORS' >> ~/.zshrc
-
-# install powerlevel10k (oh my zsh theme)
-RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
-RUN perl -pi -w -e 's/ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/g;' ~/.zshrc 
-RUN echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
-RUN mkdir -p root/.vscode-server/data/Machine
-RUN touch root/.vscode-server/data/Machine/settings.json
-RUN echo '{"editor.fontFamily": "Consolas, 'Courier New', monospace, 'MesloLGS NF'",}' >> root/.vscode-server/data/Machine/settings.json
-COPY ./.p10k.zsh /root/.p10k.zsh
-RUN sed -i 's/\r$//' /root/.p10k.zsh
-RUN perl -pi -w -e 's/# If you come.*/if [[ -r "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh" ]]; then\n  source "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh"\nfi/g' ~/.zshrc
-
-
-
-# install docker
-# RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-# RUN echo \ 
-#     "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-#     $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-# RUN apt-get update \
-#     && apt-get install -y \
-#     docker-ce \
-#     docker-ce-cli \
-#     containerd.io
-
-# # install fonts
-RUN mkdir /usr/share/fonts/truetype/MesloLGS\ NF
-RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Regular.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
-RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Bold.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
-RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Italic.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
-RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Bold\ Italic.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
-RUN fc-cache -f -v
-
-# install node & nest
-RUN mkdir -p root/.nvm
-ENV NVM_DIR root/.nvm
-ENV NODE_VERSION 20.11.0
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-RUN apt-get update
-RUN source $NVM_DIR/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && nvm alias defalut $NODE_VERSION \
-    && nvm use defalut \
-    && apt install -y npm \
-    && npm install -g pm2
-RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.zshrc 
-# ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-# ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
-
 RUN mkdir /root/.ssh
 ADD ./id_rsa /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
@@ -84,11 +27,13 @@ RUN apt-get clean
 
 RUN git config --global user.name "jiminu"
 RUN git config --global user.email "jmu417@gmail.com"
-RUN git clone --single-branch git@github.com:jiminu/e2a_express.git ./app
+RUN git clone git@github.com:jiminu/e2a_express.git /app
 WORKDIR /app
+RUN git pull
 RUN npm install
 RUN git checkout -- package-lock.json
 
 # RUN rm -rf /root/.ssh/
 
 # CMD tail -f /dev/null
+CMD [ "npm", "run", "dev"]

@@ -19,17 +19,17 @@ services:
       - TZ=${TZ}
     
     volumes:
-      - C:/volume_db/configdb:/data/configdb
-      - C:/volume_db/mongodb:/data/db
+      - ${CONFIG_DB}:/data/configdb
+      - ${MONGODB}:/data/db
       
     restart: always
     # command: "tail -f /dev/null"
-    networks:
-      - food_net
+    # networks:
+    #   - food_net
       
   express:
     container_name: express
-    image: jiminu/express:0.4
+    image: jiminu/express:0.5
     depends_on:
       - mdb
     restart: always
@@ -47,10 +47,10 @@ services:
       - ${NODE_PORT}:${NODE_PORT}
     expose:
       - ${NODE_PORT}
-    command: tail -f /dev/null
-    networks:
-      - food_net
+    # command: tail -f /dev/null
+#     networks:
+#       - food_net
     
-networks:
-  food_net:
-    driver: bridge
+# networks:
+#   food_net:
+#     driver: bridge
