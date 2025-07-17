@@ -1,0 +1,39 @@
+# docker build -t jiminu/express:0.1 -f dockerfile-express ./
+
+FROM node:20.11
+# ENV DEBIAN_FRONTEND=noninteractive
+# essential install
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+RUN apt-get update \ 
+    && apt-get install -y \
+    git \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    wget \
+    fontconfig \
+    vim \
+    net-tools \
+    psmisc
+
+# RUN mkdir /root/.ssh
+# ADD ./id_rsa /root/.ssh/id_rsa
+# RUN chmod 600 /root/.ssh/id_rsa
+# RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+
+RUN apt-get clean
+
+RUN git config --global user.name "jiminu"
+RUN git config --global user.email "jmu417@gmail.com"
+# RUN git clone git@github.com:jiminu/e2a_express.git /app
+WORKDIR /app
+# RUN git pull
+# RUN npm install
+# RUN git checkout -- package-lock.json
+
+# RUN rm -rf /root/.ssh/
+
+# CMD tail -f /dev/null
+# CMD [ "npm", "run", "dev"]

@@ -1,0 +1,56 @@
+version: "3"
+
+# services 하위로 한 묶음
+services:
+  db:
+    container_name: db
+    image: catdb:0.1
+    # env_file:
+    #   - .env
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    expose:
+      - ${MONGO_PORT}
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      
+      - TZ=${TZ}
+    
+    volumes:
+      - ${CONFIG_DB}:/data/configdb
+      - ${MONGODB}:/data/db
+      
+    restart: always
+    # command: "tail -f /dev/null"
+    # networks:
+    #   - food_net
+      
+  express:
+    container_name: express
+    image: express:0.1
+    depends_on:
+      - db
+    restart: always
+    # env_file:
+    #   - ../config/.env
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - ME_CONFIG_MONGODB_URL=mongodb://db:27017
+      - ME_CONFIG_BASICAUTH_USERNAME=user
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+      
+      - TZ=${TZ}
+    ports:
+      - ${NODE_PORT}:${NODE_PORT}
+    expose:
+      - ${NODE_PORT}
+    command: tail -f /dev/null
+#     networks:
+#       - food_net
+    
+# networks:
+#   food_net:
+#     driver: bridge

@@ -1,0 +1,49 @@
+# docker build --ssh default=./deploy_key -t express_cat:0.1 -f dockerfile-express ./ --no-cache
+
+FROM node:20.11
+# ENV DEBIAN_FRONTEND=noninteractive
+
+# syntax=docker/dockerfile:1.6
+
+# essential install
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+RUN apt-get update \ 
+    && apt-get install -y \
+    git \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    wget \
+    fontconfig \
+    vim \
+    net-tools \
+    psmisc \
+    openssh-client
+    
+RUN mkdir -p ~/.ssh \
+ && chmod 700 ~/.ssh \
+ && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+# RUN mkdir /root/.ssh
+# ADD ./id_rsa /root/.ssh/id_rsa
+# RUN chmod 600 /root/.ssh/id_rsa
+# RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+
+RUN apt-get clean
+
+RUN --mount=type=ssh \
+    git clone --depth 1 git@github.com:cat-investigation/express.git /app
+
+RUN git config --global user.name "jiminu"
+RUN git config --global user.email "jmu417@gmail.com"
+# # RUN git clone git@github.com:jiminu/e2a_express.git /app
+WORKDIR /app
+# RUN git pull
+RUN npm install
+RUN git checkout -- package-lock.json
+
+RUN rm -rf /root/.ssh/
+
+CMD [ "npm", "run", "dev"]
