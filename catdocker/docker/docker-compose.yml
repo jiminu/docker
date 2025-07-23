@@ -18,7 +18,7 @@ services:
       - TZ=${TZ}
     
     volumes: 
-      - ${LOCAL_MONGODB}:${MONGODB}
+      - ${HOST_MONGODB}:${MONGODB}
       
     restart: unless-stopped
       
