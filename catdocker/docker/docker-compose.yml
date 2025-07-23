@@ -2,7 +2,7 @@
 # services 하위로 한 묶음
 services:
   db:
-    container_name: db
+    container_name: db1
     image: jiminu/db_cat:0.1
     env_file:
       - .env
@@ -18,15 +18,13 @@ services:
       - TZ=${TZ}
     
     volumes: 
-      # - /mnt/myhdd:/data/db
-      # - ${CONFIG_DB}:/mnt/myhdd/configdb
       - ${LOCAL_MONGODB}:${MONGODB}
       
     restart: unless-stopped
       
   express:
-    container_name: express
-    image: jiminu/express_cat:0.1
+    container_name: express1
+    image: jiminu/express_cat:0.2
     depends_on:
       - db
     restart: unless-stopped
