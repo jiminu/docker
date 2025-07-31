@@ -2,7 +2,7 @@
 # services 하위로 한 묶음
 services:
   db:
-    container_name: db1
+    container_name: db
     image: jiminu/db_cat:0.1
     env_file:
       - .env
@@ -23,8 +23,8 @@ services:
     restart: unless-stopped
       
   express:
-    container_name: express1
-    image: jiminu/express_cat:0.2
+    container_name: express
+    image: jiminu/express_cat:0.5
     depends_on:
       - db
     restart: unless-stopped
