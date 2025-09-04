@@ -23,6 +23,12 @@ docker buildx build \
   --push \
   .
 ```
+개느림
+
+# arm64 native
+```docker
+docker buildx build --platform linux/arm64 -t image:tag --push .
+```
 
 # run
 
