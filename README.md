@@ -15,6 +15,16 @@ mongosh -u root -p pass
 docker build -t [image_name:tag] -f [dockerfile_name] [path] --no-cache
 ```
 
+# multi architecture
+```docker
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t <도커허브계정>/<이미지이름>:tag \
+  --push \
+  .
+```
+
+# run
 
 ```docker
 docker run -it --name [container_name] -d -p [local_port:image_port] [image_name]

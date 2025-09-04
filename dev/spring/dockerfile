@@ -1,6 +1,6 @@
 # docker build -t jiminu/express:0.1 -f dockerfile-express ./
 
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 # essential install
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
@@ -17,7 +17,8 @@ RUN apt-get update \
     vim \
     net-tools \
     psmisc \
-    openjdk-17-jdk
+    openjdk-17-jdk-headless \
+    && rm -rf /var/lib/apt/lists/*
 
 # install OpenJDK 17 and expose JAVA_HOME to shells
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
@@ -26,7 +27,7 @@ RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> ~/.zshrc \
  && echo 'export PATH=$JAVA_HOME/bin:$PATH' >> ~/.zshrc
 
 # install oh my zsh
-RUN apt install -y zsh
+RUN apt-get update && apt-get install -y zsh
 RUN chsh -s /bin/zsh
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
@@ -76,7 +77,7 @@ RUN source $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias defalut $NODE_VERSION \
     && nvm use defalut \
-    && apt install -y npm \
+    && apt-get install -y npm \
     && npm install -g pm2
 RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.zshrc 
 # ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
