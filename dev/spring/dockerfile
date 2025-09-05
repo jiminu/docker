@@ -2,8 +2,21 @@
 
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
+
+
+
 # essential install
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+# KST
+ENV TZ=Asia/Seoul
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tzdata \
+    && ln -fs /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update \
     && apt-get install -y \
     git \
