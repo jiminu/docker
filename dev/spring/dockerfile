@@ -31,6 +31,7 @@ RUN apt-get update \
     net-tools \
     psmisc \
     openjdk-17-jdk-headless \
+    locales \
     && rm -rf /var/lib/apt/lists/*
 
 # install OpenJDK 17 and expose JAVA_HOME to shells
@@ -59,7 +60,11 @@ COPY ./.p10k.zsh /root/.p10k.zsh
 RUN sed -i 's/\r$//' /root/.p10k.zsh
 RUN perl -pi -w -e 's/# If you come.*/if [[ -r "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh" ]]; then\n  source "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh"\nfi/g' ~/.zshrc
 
-
+# korean font
+RUN locale-gen en_US.UTF-8 ko_KR.UTF-8
+RUN update-locale LANG=en_US.UTF-8 LC_CTYPE=ko_KR.UTF-8
+RUN echo 'export LANG=en_US.UTF-8' >> ~/.zshrc
+RUN echo 'export LC_CTYPE=ko_KR.UTF-8' >> ~/.zshrc
 
 # install docker
 # RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
