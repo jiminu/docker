@@ -42,6 +42,14 @@ services:
       - ./mariadb/conf.d:/etc/mysql/conf.d:ro
       - ./mariadb/init:/docker-entrypoint-initdb.d:ro
       - "C:/mariadb:/var/lib/mysql"
+      
+  front:
+    container_name: front
+    image: jiminu/spring_dev:0.4
+    restart: always
+    ports:
+      - "80:80"
+    command: tail -f /dev/null
     
 # networks:
 #   food_net:
