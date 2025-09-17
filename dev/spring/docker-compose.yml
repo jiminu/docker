@@ -4,7 +4,7 @@ version: "3"
 services:
   redis:
     container_name: redis
-    image: redis:latest
+    image: redis:8.2.1
     ports:
       - "6379:6379"
     restart: always
@@ -17,14 +17,31 @@ services:
     image: jiminu/spring_dev:0.4
     depends_on:
       - redis
+      - mariadb
     restart: always
     # env_file:
     #   - ../config/.env
     ports:
-      - "8087:8087"
+      - "8088:8088"
     command: tail -f /dev/null
 #     networks:
 #       - food_net
+
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.3
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: 1234
+      MARIADB_DATABASE: miniproject
+      MARIADB_USER: user
+      MARIADB_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mariadb/conf.d:/etc/mysql/conf.d:ro
+      - ./mariadb/init:/docker-entrypoint-initdb.d:ro
+      - "C:/mariadb:/var/lib/mysql"
     
 # networks:
 #   food_net:
