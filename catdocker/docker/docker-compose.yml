@@ -1,11 +1,10 @@
-
 # services 하위로 한 묶음
 services:
   db:
     container_name: db
     image: jiminu/db_cat:0.1
-    env_file:
-      - .env
+    # if arm64 architecture, use the following line instead
+    # platform: linux/amd64
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
     expose:
@@ -19,12 +18,17 @@ services:
     
     volumes: 
       - ${HOST_MONGODB}:${MONGODB}
+    
+    tmpfs:
+      - /tmp
       
     restart: unless-stopped
       
   express:
     container_name: express
-    image: jiminu/express_cat:0.5
+    image: jiminu/express_cat:0.8
+    # if arm64 architecture, use the following line instead
+    # platform: linux/amd64
     depends_on:
       - db
     restart: unless-stopped
@@ -40,3 +44,40 @@ services:
       - ${NODE_PORT}:${NODE_PORT}
     expose:
       - ${NODE_PORT}
+
+  backup:
+    container_name: backup
+    image: mongo:6
+    depends_on:
+      - db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_HOST=db
+      - MONGO_PORT=27017
+      - BACKUP_INTERVAL_SECONDS=${BACKUP_INTERVAL_SECONDS}
+    volumes:
+      - ${HOST_MONGODB_BACKUP}:/backups
+    restart: unless-stopped
+    command: >-
+      sh -c '
+        echo "[backup] starting backup loop with interval ${BACKUP_INTERVAL_SECONDS:-3600}s";
+        while true; do 
+          if mongosh --quiet \
+            --host="$$MONGO_HOST" --port="$$MONGO_PORT" \
+            -u "$$MONGO_INITDB_ROOT_USERNAME" -p "$$MONGO_INITDB_ROOT_PASSWORD" \
+            --authenticationDatabase admin \
+            --eval "db.adminCommand(\"ping\")" >/dev/null 2>&1; then
+              ts=$$(date +%F-%H%M%S);
+              outDir=/backups/dump-$$ts;
+              echo "[backup] running mongodump to $$outDir";
+              mongodump \
+                --host="$$MONGO_HOST" --port="$$MONGO_PORT" \
+                -u "$$MONGO_INITDB_ROOT_USERNAME" -p "$$MONGO_INITDB_ROOT_PASSWORD" \
+                --authenticationDatabase admin \
+                --out "$$outDir" && echo "[backup] success: $$outDir" || echo "[backup] mongodump failed";
+          else
+              echo "[backup] db not ready, will retry";
+          fi;
+          sleep $${BACKUP_INTERVAL_SECONDS:-3600};
+        done'
