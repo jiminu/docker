@@ -2,7 +2,7 @@
 services:
   db:
     container_name: db
-    image: jiminu/db_cat:0.1
+    image: mongo:6.0
     # if arm64 architecture, use the following line instead
     # platform: linux/amd64
     ports:
@@ -18,7 +18,8 @@ services:
     
     volumes: 
       - ${HOST_MONGODB}:${MONGODB}
-    
+      - ./users_init.sh:/docker-entrypoint-initdb.d/users_init.sh:ro
+
     tmpfs:
       - /tmp
       
