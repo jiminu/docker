@@ -23,7 +23,6 @@ docker buildx build \
   --push \
   .
 ```
-개느림
 
 # arm64 native
 ```docker
