@@ -79,11 +79,6 @@ RUN apt-get clean
 
 RUN git config --global user.name "jiminu"
 RUN git config --global user.email "jmu417@gmail.com"
-# RUN git clone --single-branch git@github.com:jiminu/e2a_express.git ./app
-# WORKDIR /app
-# RUN git pull
-# RUN npm install
-# RUN git checkout -- package-lock.json
 
 # RUN rm -rf /root/.ssh/
 
