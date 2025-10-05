@@ -35,9 +35,6 @@ RUN echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
 RUN mkdir -p root/.vscode-server/data/Machine
 RUN touch root/.vscode-server/data/Machine/settings.json
 RUN echo '{"editor.fontFamily": "Consolas, 'Courier New', monospace, 'MesloLGS NF'",}' >> root/.vscode-server/data/Machine/settings.json
-COPY ./.p10k.zsh /root/.p10k.zsh
-RUN perl -pi -w -e 's/# If you come.*/if [[ -r "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh" ]]; then\n  source "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh"\nfi/g' ~/.zshrc
-
 
 
 # install docker
