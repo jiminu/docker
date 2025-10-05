@@ -1,6 +1,7 @@
-# docker build -t jiminu/express:0.1 -f dockerfile-express ./
+# docker build -t <IMAGE-NAME>:<TAG> -f dockerfile .
+# docker buildx build --platform linux/amd64,linux/arm64 -t <IMAGE-NAME>:<TAG> --push .
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # essential install
@@ -52,26 +53,15 @@ RUN echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
 RUN mkdir -p root/.vscode-server/data/Machine
 RUN touch root/.vscode-server/data/Machine/settings.json
 RUN echo '{"editor.fontFamily": "Consolas, 'Courier New', monospace, 'MesloLGS NF'",}' >> root/.vscode-server/data/Machine/settings.json
-COPY ./.p10k.zsh /root/.p10k.zsh
-RUN sed -i 's/\r$//' /root/.p10k.zsh
-RUN perl -pi -w -e 's/# If you come.*/if [[ -r "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh" ]]; then\n  source "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh"\nfi/g' ~/.zshrc
+# COPY ./.p10k.zsh /root/.p10k.zsh
+# RUN sed -i 's/\r$//' /root/.p10k.zsh
+# RUN perl -pi -w -e 's/# If you come.*/if [[ -r "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh" ]]; then\n  source "\${XDG_CACHE_HOME:-\$HOME\/.cache}\/p10k-instant-prompt-\${(%):-%n}.zsh"\nfi/g' ~/.zshrc
 
 # korean font
 RUN locale-gen en_US.UTF-8 ko_KR.UTF-8
 RUN update-locale LANG=en_US.UTF-8 LC_CTYPE=ko_KR.UTF-8
 RUN echo 'export LANG=en_US.UTF-8' >> ~/.zshrc
 RUN echo 'export LC_CTYPE=ko_KR.UTF-8' >> ~/.zshrc
-
-# install docker
-# RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-# RUN echo \ 
-#     "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-#     $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-# RUN apt-get update \
-#     && apt-get install -y \
-#     docker-ce \
-#     docker-ce-cli \
-#     containerd.io
 
 # # install fonts
 RUN mkdir /usr/share/fonts/truetype/MesloLGS\ NF
@@ -89,20 +79,9 @@ RUN set -eux; \
     tar -xvf "${CMAKE_TAR}"; \
     cd "cmake-${CMAKE_VER}"; \
     ./bootstrap; \
-    make -j"$(nproc)"; \
+    make -j $(nproc); \
     make install; \
     cd ..; \
     rm -rf "${CMAKE_TAR}" "cmake-${CMAKE_VER}";
 
-
-
 RUN apt-get clean
-
-RUN git config --global user.name "jiminu"
-RUN git config --global user.email "jmu417@gmail.com"
-
-# RUN rm -rf /root/.ssh/
-
-# CMD tail -f /dev/null
-
-# CMD [ "npm", "run", "dev"]
