@@ -67,7 +67,7 @@ RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Italic.ttf http
 RUN wget -O /usr/share/fonts/truetype/MesloLGS\ NF/MesloLGS\ NF\ Bold\ Italic.ttf https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
 RUN fc-cache -f -v
 
-# install node & nest
+# install node
 RUN mkdir -p root/.nvm
 ENV NVM_DIR=/root/.nvm
 ENV NODE_VERSION=22.17.1
