@@ -1,0 +1,190 @@
+name: service
+services:
+
+    nginx:
+        image: nginx:alpine
+        container_name: nginx-lb
+        ports:
+            - "8081:8081"
+            - "8082:8082"
+            - "8083:8083"
+            - "8084:8084"
+            - "8085:8085"
+            - "8086:8086"
+            - "8087:8087"
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        depends_on:
+            - user
+            - restarea
+            - restarea-unit
+            - content
+            - openapi
+            - tmapapi
+            - openai
+        restart: unless-stopped
+
+    redis:
+        container_name: redis
+        image: redis:8.2.1
+        # ports:
+        # - "6379:6379"
+        restart: unless-stopped
+
+    mariadb:
+        container_name: mariadb
+        image: mariadb:10.3
+        restart: unless-stopped
+        environment:
+            MARIADB_ROOT_PASSWORD: 1234
+            MARIADB_DATABASE: miniproject
+            MARIADB_USER: user
+            MARIADB_PASSWORD: 1234
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./mariadb/conf.d:/etc/mysql/conf.d:ro
+            - ./mariadb/init:/docker-entrypoint-initdb.d:ro
+            - "/mnt/mariadb:/var/lib/mysql"
+
+# ---------------------------------------------
+
+    user:
+        image: jiminu/mp3-service-user:stg
+        env_file:
+            - ./.env
+        deploy:
+            mode: replicated
+            replicas: 1
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 500M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: unless-stopped
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://${EC2_EUREKA_PRIVATE_IP}:8765/eureka
+            - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport
+
+    restarea:
+        image: jiminu/mp3-service-restarea:stg
+        env_file:
+            - ./.env
+        deploy:
+            mode: replicated
+            replicas: 2
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 500M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: unless-stopped
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://${EC2_EUREKA_PRIVATE_IP}:8765/eureka
+            - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport
+
+    restarea-unit:
+        image: jiminu/mp3-service-restarea-unit:stg
+        env_file:
+            - ./.env
+        deploy:
+            mode: replicated
+            replicas: 1
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 500M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: unless-stopped
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://${EC2_EUREKA_PRIVATE_IP}:8765/eureka
+            - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport
+
+    content:
+        image: jiminu/mp3-service-content:stg
+        env_file:
+            - ./.env
+        deploy:
+            mode: replicated
+            replicas: 1
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 500M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: unless-stopped
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://${EC2_EUREKA_PRIVATE_IP}:8765/eureka
+            - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport
+
+    openapi:
+        image: jiminu/mp3-service-openapi:stg
+        env_file:
+            - ./.env
+        deploy:
+            mode: replicated
+            replicas: 1
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 500M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: unless-stopped
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://${EC2_EUREKA_PRIVATE_IP}:8765/eureka
+            - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport
+
+    tmapapi:
+        image: jiminu/mp3-service-tmapapi:stg
+        env_file:
+            - ./.env
+        deploy:
+            mode: replicated
+            replicas: 1
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 500M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: unless-stopped
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://${EC2_EUREKA_PRIVATE_IP}:8765/eureka
+            - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport
+
+    openai:
+        image: jiminu/mp3-service-openai:stg
+        env_file:
+            - ./.env
+        deploy:
+            mode: replicated
+            replicas: 1
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 500M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: unless-stopped
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://${EC2_EUREKA_PRIVATE_IP}:8765/eureka
+            - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport

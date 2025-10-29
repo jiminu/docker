@@ -1,0 +1,197 @@
+name: test
+services:
+    redis:
+        container_name: redis
+        image: redis:8.2.1
+        # ports:
+        # - "6379:6379"
+        restart: always
+        
+    mariadb:
+        container_name: mariadb
+        image: mariadb:10.3
+        restart: always
+        environment:
+            MARIADB_ROOT_PASSWORD: 1234
+            MARIADB_DATABASE: miniproject
+            MARIADB_USER: user
+            MARIADB_PASSWORD: 1234
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./mariadb/conf.d:/etc/mysql/conf.d:ro
+            - ./mariadb/init:/docker-entrypoint-initdb.d:ro
+            - "/mnt/mariadb:/var/lib/mysql"
+    gateway:
+        # build: ../spring-gateway
+        image: jiminu/mp3-gateway:main
+        ports:
+            - "9000:9000"
+        restart: always
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka
+
+    eureka:
+        image: jiminu/mp3-eureka:main
+        container_name: eureka
+        ports:
+            - "8765:8765"
+        restart: always
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka
+
+    # 여기부터 필요한 서비스들 추가해서 테스트.
+
+    user:
+        # build: ../service/user
+        image: jiminu/mp3-service-user:main
+        env_file:
+            - ./.env
+        ports:
+            - "8081:8080"
+        deploy:
+            mode: replicated
+            replicas: 1 
+            resources: 
+                # limits:
+                #     cpus: '0.1'
+                #     memory: 200M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: always
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka
+
+    restarea:
+        # build: ../service/restarea
+        image: jiminu/mp3-service-restarea:main
+        env_file:
+            - ./.env
+        ports:
+            - "8082:8080"
+        deploy:
+            mode: replicated
+            replicas: 1
+            resources: 
+                # limits:
+                #     cpus: '0.1'
+                #     memory: 200M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: always
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka
+
+    restarea-unit:
+        # build: ../service/restarea-unit
+        image: jiminu/mp3-service-restarea-unit:main
+        env_file:
+            - ./.env
+        ports:
+            - "8083:8080"
+        deploy:
+            mode: replicated
+            replicas: 1 
+            resources: 
+                # limits:
+                #     cpus: '0.1'
+                #     memory: 200M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: always
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka
+
+    content:
+        # build: ../service/content
+        image: jiminu/mp3-service-content:main
+        env_file:
+            - ./.env
+        ports:
+            - "8084:8080"
+        deploy:
+            mode: replicated
+            replicas: 1 
+            resources: 
+                # limits:
+                #     cpus: '0.1'
+                #     memory: 200M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: always
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka
+
+    openapi:
+        # build: ../service/openapi
+        image: jiminu/mp3-service-openapi:main
+        env_file:
+            - ./.env
+        ports:
+            - "8085:8080"
+        deploy:
+            mode: replicated
+            replicas: 1 
+            resources: 
+                # limits:
+                #     cpus: '0.1'
+                #     memory: 200M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: always
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka
+
+    tmapapi:
+        # build: ../service/tmapapi
+        image: jiminu/mp3-service-tmapapi:main
+        env_file:
+            - ./.env
+        ports:
+            - "8086:8080"
+        deploy:
+            mode: replicated
+            replicas: 1 
+            resources: 
+                # limits:
+                #     cpus: '0.1'
+                #     memory: 200M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: always
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka
+
+    openai:
+        # build: ../service/openai
+        image: jiminu/mp3-service-openai:main
+        env_file:
+            - ./.env
+        ports:
+            - "8087:8080"
+        deploy:
+            mode: replicated
+            replicas: 1 
+            resources: 
+                # limits:
+                #     cpus: '0.1'
+                #     memory: 200M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M
+        restart: always
+        environment:
+            - SERVER_PORT=8080
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka

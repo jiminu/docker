@@ -1,0 +1,36 @@
+name: gateway
+services:
+  scg-proxy:
+    image: jiminu/mp3-gateway:main
+    ports:
+      - "9000:9000"
+    environment:
+      # - HELLO_SVC_URI=http://awsgoo-myblog-1:8080
+      # - EUREKA_SVC_URI=http://sc-eureka:9090
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8765/eureka
+      - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport
+    restart: unless-stopped
+
+      
+  eureka:
+    image: jiminu/mp3-eureka:main
+    container_name: eureka
+    ports:
+      - "8765:8765"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://${EC2_EUREKA_PRIVATE_IP}:8765/eureka
+      - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport
+    restart: unless-stopped
+  # nginx-proxy:
+  #   # build: ../../docker_file/nginx_compose
+  #   image: jiminu/nginx-compose:0.1.2-amd
+  #   ports:
+  #     - "9889:80"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.20'
+  #         memory: 50M
+  #       reservations:
+  #         cpus: '0.05'
+  #         memory: 20M
