@@ -49,8 +49,8 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | b
 RUN apt-get update
 RUN source $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
-    && nvm alias defalut $NODE_VERSION \
-    && nvm use defalut \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default \
     && apt install -y npm \
     && npm install -g pm2
 RUN perl -pi -w -e 's/export\ NVM_DIR=.*/export\ NVM_DIR="\$HOME\/.nvm"/g;' ~/.zshrc 
